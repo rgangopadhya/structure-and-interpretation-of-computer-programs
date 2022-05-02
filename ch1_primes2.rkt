@@ -36,7 +36,7 @@
             ((divides? test-divisor n) test-divisor)
             (else (find-divisor n (+ 1 test-divisor)))))
         (define (smallest-divisor n) (find-divisor n 2))
-        ((smallest-divisor n) = n))
+        (= (smallest-divisor n) n))
     (define (start-prime-test n start-time)
         (prime? n)
         (- (current-inexact-monotonic-milliseconds) start-time))
@@ -44,10 +44,19 @@
 
 (naive-timed-prime-test 1009)
 
-(define (average fn n)
-  (define (average-iter f i total end)
-    (if (= 0 i) (/ total end) (average-iter f (+ 1 i) (+ (f) total) end)))
-  (average-iter fn 0 0 n))
+;; the main issue with this average function is that we would like
+;; to be able to apply f to arguments, but we dont have a way to do that?
+;; hmm... is there a way? we could do a single argument... that will be sufficient
+;; for now.
+(define (average fn arg n)
+  (define (average-iter f arg i total end)
+    (if (= n i) (/ total end) (average-iter f arg (+ 1 i) (+ (f arg) total) end)))
+  (average-iter fn arg 0 0 n))
+
+(define (square x) (* x x))
+
+; Verify it works with a dumb example!
+(average square 2 10)
 
 ; ========================================== ;
 ;         **** Approach 1b ****
