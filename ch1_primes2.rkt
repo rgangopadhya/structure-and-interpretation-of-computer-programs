@@ -26,6 +26,17 @@
 ;       code over time?)
 
 ; ========================================== ;
+;
+(define (average fn arg n)
+  (define (average-iter f arg i total end)
+    (if (= n i) (/ total end) (average-iter f arg (+ 1 i) (+ (apply f arg) total) end)))
+  (average-iter fn arg 0 0 n))
+
+(define (square x) (* x x))
+
+; Verify it works with a dumb example!
+(average square (list 2) 10)
+
 ;         **** Approach 1a ****
 (define (naive-timed-prime-test n)
     (define (prime? n)
@@ -40,23 +51,31 @@
     (define (start-prime-test n start-time)
         (prime? n)
         (- (current-inexact-monotonic-milliseconds) start-time))
-    (start-prime-test n (current-inexact-monotonic-milliseconds)))
+    (average
+      start-prime-test
+      (list n (current-inexact-monotonic-milliseconds))
+      10
+      ))
 
 (naive-timed-prime-test 1009)
 
-;; the main issue with this average function is that we would like
-;; to be able to apply f to arguments, but we dont have a way to do that?
-;; hmm... is there a way? we could do a single argument... that will be sufficient
-;; for now.
-(define (average fn arg n)
-  (define (average-iter f arg i total end)
-    (if (= n i) (/ total end) (average-iter f arg (+ 1 i) (+ (f arg) total) end)))
-  (average-iter fn arg 0 0 n))
+(apply + '(1 2 3))
+(map naive-timed-prime-test
+     (list 
+      1009
+      1013
+      1019
+      10007
+      10009
+      10037
+      100003
+      100019
+      100043
+      1000003
+      1000033
+      1000037))
 
-(define (square x) (* x x))
-
-; Verify it works with a dumb example!
-(average square 2 10)
+(average naive-timed-prime-test 1009 10)
 
 ; ========================================== ;
 ;         **** Approach 1b ****
