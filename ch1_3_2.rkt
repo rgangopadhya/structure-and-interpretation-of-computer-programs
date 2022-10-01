@@ -22,6 +22,7 @@
        (lambda (x) (+ x 4))
        b))
 
+(displayln "pi?")
 (display (* 8 (pi-sum 1 10000)))
 
 ;; and, compare
@@ -101,13 +102,13 @@
 ;; ex 1.37
 (define (cont-frac n d k)
 
-  (display k)
-  (display "  ")
-  (display (n k))
-  (display "  ")
-  (display (d k))
-  (display "  ")
-  (display (/ (n k) (d k)))
+  ; (display k)
+  ; (display "  ")
+  ; (display (n k))
+  ; (display "  ")
+  ; (display (d k))
+  ; (display "  ")
+  ; (display (/ (n k) (d k)))
   (newline)
   (if (= k 0)
     0
@@ -122,17 +123,17 @@
 
 ;; ex 1.38
 ;; continued fraction expansion for e - 2
-;; N_i: all i
+;; N_i: 1 for all i
 ;; D_i: 1, 2, 1, 1, 4, 1, 1, 6, 1, 1, 8...
-;;      0  1  2  3  4  5  6  7  8  9  10
-;;         1        4        7        10
-;;         modulo (i - 1) 3 = 0
+;;      1  2  3  4  5  6  7  8  9  10 11
+;;         2        5        8        11
+;;
 (displayln "estimating e-2")
 (displayln ((lambda (i)
                           (cond
-                            ((= i 0) 1) 
+                            ((= i 0) 1.0) 
                             ((= 0 (modulo (- i 1) 3.0))
-                                1)
+                                1.0)
                             (else (* 2.0 (ceiling (/ i 3.0))
                             )))) 0))
 (displayln (+
@@ -140,8 +141,23 @@
              (cont-frac (lambda (i) 1.0)
                         (lambda (i)
                           (cond
-                            ((= i 0) 1) 
-                            ((= 0 (modulo (- i 1) 3.0))
-                                1)
+                            ((= 0 (modulo i 3.0))
+                                1.0)
+                            ((= 1 (modulo i 3.0))
+                                1.0)
                             (else (* 2.0 (ceiling (/ i 3.0))
                             )))) 10000)))
+
+;; ex 1.39
+;; Continued fraction of tan(x)
+;; Ni x -x^2 -x^2 -x^2
+;; Di 1  3    5    7
+;; k  1  2    3    4
+;; 
+(define (tan-cf x k)
+  (cont-frac (lambda (i) (if (= i 0) x (* x x)))
+             (lambda (i) (+ 1.0 (* 2 (- i 1))))
+             k))
+(displayln "estimating tan0")
+(displayln (tan-cf 0 1000))
+(displayln (tan-cf (/ (* 8 (pi-sum 1 10000)) 4) 1000))
